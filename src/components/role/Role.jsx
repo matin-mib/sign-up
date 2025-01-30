@@ -1,19 +1,32 @@
-import { useNavigate } from "react-router-dom"
+import { useState } from "react";
+import { Link } from "react-router-dom"
 
 const Role = () => {
 
-  const navigate = useNavigate()
+  const [data, setData] = useState('');
   return (
     <div className="h-[100vh] flex flex-col justify-center items-center">
       <h1 className="text-center font-bold text-[25px]">Rol Seçimi</h1>
 
       <div className="flex flex-wrap sm:flex-nowrap gap-5 sm:gap-0 justify-center items-end py-10">
-        <button onClick={() => navigate('/signup')} className="border flex justify-center items-center font-bold border-green-500 sm:rounded-tr-3xl h-[150px] w-[300px] bg-green-500 text-white hover:bg-transparent hover:text-green-500 transition">
+
+        <Link
+          onClick={() => setData('Freelanse')}
+          type="button"
+          to={{ pathname: '/signup', state: { data } }}
+          className="border flex justify-center items-center font-bold border-green-500 sm:rounded-tr-3xl h-[150px] w-[300px] bg-green-500 text-white hover:bg-transparent hover:text-green-500 transition"
+        >
           Mən Freelanserəm
-        </button>
-        <button onClick={() => navigate('/signup')} className="border flex justify-center items-center font-bold border-green-500 sm:rounded-tl-3xl h-[150px] sm:h-[200px] w-[300px] text-green-500 hover:bg-green-500 hover:text-white transition">
+        </Link>
+
+        <Link
+          type="button"
+          onClick={() => setData('İşəgötürən')}
+          to={{ pathname: '/signup', state: { data } }}
+          className="border flex justify-center items-center font-bold border-green-500 sm:rounded-tl-3xl h-[150px] sm:h-[200px] w-[300px] text-green-500 hover:bg-green-500 hover:text-white transition"
+        >
           Mən İşəgötürənəm
-        </button>
+        </Link>
       </div>
     </div>
   )

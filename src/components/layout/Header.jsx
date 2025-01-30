@@ -18,7 +18,7 @@ const Header = () => {
   };
 
   return (
-    <div className="fixed w-[100%] flex justify-between px-2 py-3 bg-transparent">
+    <div className="flex justify-between px-2 py-3 bg-transparent">
       <div className="uppercase font-bold text-xl relative">
         <h1 className="after:content after:absolute after:w-[12px] after:h-[12px] after:bg-green-600  after:rounded-full after:right-[-12px] after:top-[-3px] after:z-20">getjob</h1>
       </div>
