@@ -26,6 +26,10 @@ const SignUp = () => {
 
   const handleGoogleSuccess = (response) => {
     console.log("Google Success:", response);
+    notification.success({
+      message: "Qeydiyyat tamamlandı!",
+      description: "Siz uğurla qeydiyyatdan keçdiniz.",
+    });
   };
 
   const handleGoogleFailure = (error) => {
@@ -62,7 +66,7 @@ const SignUp = () => {
                 { min: 8, message: "Şifrə minimum 8 simvol olmalıdır!" },
                 { pattern: /[A-Z]/, message: "Şifrədə ən azı bir böyük hərf olmalıdır!" },
                 { pattern: /\d/, message: "Şifrədə ən azı bir rəqəm olmalıdır!" },
-                { pattern: /[!@#$%^&*]/, message: "Şifrədə ən azı bir xüsusi simvol olmalıdır!" },
+                { pattern: /[!@#$%^&*№]/, message: "Şifrədə ən azı bir xüsusi simvol olmalıdır!" },
               ]}
             >
               <Input.Password placeholder="Password" />
