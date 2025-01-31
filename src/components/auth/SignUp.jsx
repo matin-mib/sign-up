@@ -17,6 +17,9 @@ const SignUp = () => {
   const [timer, setTimer] = useState(180);
   const [codeSent, setCodeSent] = useState(false);
 
+ 
+
+  //! Checkbox save password function
   useEffect(() => {
     const storedPassword = localStorage.getItem("savedPassword");
     if (storedPassword) {
@@ -34,7 +37,7 @@ const SignUp = () => {
 
 
 
-
+//! Start time in modal
   const startTimer = () => {
     const interval = setInterval(() => {
       setTimer((prev) => {
@@ -52,9 +55,9 @@ const SignUp = () => {
     }, 1000);
   };
 
-  
+
   const sendVerificationCode = (email) => {
-    const code = Math.floor(100000 + Math.random() * 900000); 
+    const code = Math.floor(100000 + Math.random() * 900000);
     setVerificationCode(code.toString());
     setCodeSent(true);
     startTimer();
@@ -88,7 +91,7 @@ const SignUp = () => {
     });
   };
 
-  
+
   const onFinish = (values) => {
     if (!captchaVerified) {
       notification.error({
@@ -102,7 +105,7 @@ const SignUp = () => {
   };
 
   const handleTwoFactorSubmit = () => {
-    if (twoFactorCode === verificationCode) { 
+    if (twoFactorCode === verificationCode) {
       notification.success({
         message: "Qeydiyyat tamamlandı!",
         description: "Siz uğurla qeydiyyatdan keçdiniz.",
@@ -196,7 +199,7 @@ const SignUp = () => {
         title="Two-Factor Authentication"
         visible={isTwoFactorVisible}
         onOk={handleTwoFactorSubmit}
-        onCancel={() => setIsTwoFactorVisible(false)}
+        // onCancel={() => setIsTwoFactorVisible(false)}
         okText="Verify"
       >
         <p>Doğrulama kodunu daxil edin:</p>
