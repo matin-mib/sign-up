@@ -105,7 +105,11 @@ const SignUp = () => {
           </Form.Item>
 
           <Form.Item>
-            <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleFailure} />
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleFailure}
+              ux_mode="popup"
+            />
           </Form.Item>
 
           <Form.Item>
@@ -114,6 +118,8 @@ const SignUp = () => {
               redirectUri={import.meta.env.VITE_LINKEDIN_REDIRECT_URI}
               onSuccess={handleLinkedInSuccess}
               onFailure={handleLinkedInFailure}
+              redirect={false}
+               scope="r_liteprofile r_emailaddress"
             >
               {({ linkedInLogin }) => (
                 <Button
