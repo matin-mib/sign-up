@@ -41,6 +41,9 @@
         "passwordWeak": "Şifrə zəifdir, ən azı 8 simvol, bir böyük hərf, bir rəqəm və bir xüsusi simvol olmalıdır",
         "passwordMismatch": "Şifrələr uyğun gəlmir",
         "roleRequired": "Rol seçməlisiniz",
+        "nameErrorWhitespace": "Ad sahəsi boşluqla doldurula bilməz",
+        "surnameErrorWhitespace": "Soyad sahəsi boşluqla doldurula bilməz",
+        "emailErrorWhitespace": "E-poçt sahəsi boşluqla doldurula bilməz",
         "captchaRequired": "CAPTCHA doğrulaması tələb olunur"
     },
     "header": {

@@ -41,6 +41,9 @@
         "passwordWeak": "Weak password, it must contain at least 8 characters, one uppercase letter, one number, and one special character",
         "passwordMismatch": "Passwords do not match",
         "roleRequired": "You must select a role",
+        "nameErrorWhitespace": "First Name cannot be just whitespace",
+        "surnameErrorWhitespace": "Last Name cannot be just whitespace",
+        "emailErrorWhitespace": "Email Address cannot be just whitespace",
         "captchaRequired": "CAPTCHA verification is required"
     },
     "header": {

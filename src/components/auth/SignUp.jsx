@@ -136,40 +136,6 @@ const SignUp = () => {
 
 
   //! form onFinish function
-  // const onFinish = (values) => {
-  //   if (!captchaVerified) {
-  //     notification.error({
-  //       message: "CAPTCHA doğrulaması edilməyib",
-  //       description: "Xahiş edirik CAPTCHA-nı tamamlayın.",
-  //     });
-  //     return;
-  //   }
-
-  //   if (!isStrongPassword(values.password)) {
-  //     notification.error({
-  //       message: "Zəif şifrə!",
-  //       description: "Şifrə minimum 8 simvol olmalıdır! Şifrədə ən azı bir böyük hərf, bir rəqəm və bir xüsusi simvol olmalıdır!",
-  //     });
-  //     return;
-  //   }
-
-  //   sendVerificationCode(values.email);
-
-  //   const path = window.location.pathname;
-  //   const lastSegment = path.substring(path.lastIndexOf("/") + 1);
-
-  //   localStorage.setItem(
-  //     "signUpData",
-  //     JSON.stringify({
-  //       name: values.name,
-  //       surname: values.surname,
-  //       email: values.email,
-  //       password: values.password,
-  //       role: lastSegment,
-  //     })
-  //   );
-  // };
-
   const onFinish = (values) => {
     if (!captchaVerified) {
       notification.error({
@@ -203,7 +169,7 @@ const SignUp = () => {
       })
     );
 
-    // Checkbox seçilibsə, parolu saxla, əks halda sil
+
     if (rememberPassword) {
       localStorage.setItem("savedPassword", values.password);
     } else {
@@ -256,7 +222,10 @@ const SignUp = () => {
           <Form.Item
             className="my-8"
             name="name"
-            rules={[{ required: true, message: t('form.nameError') }]}
+            rules={[
+              { required: true, message: t('form.nameError') },
+              { whitespace: true, message: t('form.nameErrorWhitespace') },
+            ]}
           >
             <Input placeholder={t('form.name')} className="sign-up-input" />
           </Form.Item>
@@ -264,7 +233,10 @@ const SignUp = () => {
           <Form.Item
             className="my-8"
             name="surname"
-            rules={[{ required: true, message: t('form.surnameError') }]}
+            rules={[
+              { required: true, message: t('form.surnameError') },
+              { whitespace: true, message: t('form.surnameErrorWhitespace') },
+            ]}
           >
             <Input placeholder={t('form.surname')} className="sign-up-input" />
           </Form.Item>
@@ -272,7 +244,10 @@ const SignUp = () => {
           <Form.Item
             className="my-8"
             name="email"
-            rules={[{ required: true, type: "email", message: t('form.emailError') }]}
+            rules={[
+              { required: true, type: "email", message: t('form.emailError') },
+              { whitespace: true, message: t('form.emailErrorWhitespace') }, // Boşluq daxil edilməsini əngəlləyir
+            ]}
           >
             <Input placeholder={t('form.email')} className="sign-up-input" />
           </Form.Item>
@@ -299,14 +274,6 @@ const SignUp = () => {
             ></div>
           </div>
 
-          {/* <Form.Item>
-              <Checkbox
-                checked={rememberPassword}
-                onChange={(e) => setRememberPassword(e.target.checked)}
-              >
-                {t('form.rememberPassword')}
-              </Checkbox>
-            </Form.Item> */}
           <Form.Item>
             <Checkbox
               checked={rememberPassword}
