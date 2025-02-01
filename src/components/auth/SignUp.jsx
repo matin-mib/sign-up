@@ -6,8 +6,10 @@ import { LinkedIn } from "react-linkedin-login-oauth2";
 import { FaLinkedin } from "react-icons/fa";
 import emailjs from "emailjs-com";
 import classNames from "classnames";
+import { useTranslation } from "react-i18next";
 
 const SignUp = () => {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   const [captchaVerified, setCaptchaVerified] = useState(false);
   const [rememberPassword, setRememberPassword] = useState(false);
@@ -20,7 +22,7 @@ const SignUp = () => {
   const [passwordStrength, setPasswordStrength] = useState("");
 
 
-  //! Parolun gücünü yoxlayan funksiya
+  //! Strength  password function
   const checkPasswordStrength = (password) => {
     let strength = "weak"; // Default zəif
 
@@ -35,7 +37,7 @@ const SignUp = () => {
   };
 
 
-  //! Strong password
+  //! Strong password function
   const isStrongPassword = (password) => {
     const minLength = password.length >= 8;
     const hasUpperCase = /[A-Z]/.test(password);
@@ -204,146 +206,138 @@ const SignUp = () => {
 
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold text-center mb-6">Sign Up</h2>
+    <>
+      <div className="flex justify-center items-center h-full sign-up pt-32 ">
+        <div className="w-full max-w-md  p-8 rounded-t-full py-24 bg-white">
+          <h2 className="text-2xl font-semibold text-center mb-6">{t('form.title')}</h2>
 
-        <Form form={form} onFinish={onFinish} layout="vertical">
-          <Form.Item
-            name="name"
-            rules={[{ required: true, message: "Adınızı daxil edin!" }]}
-          >
-            <Input placeholder="Name" />
-          </Form.Item>
+          <Form form={form} onFinish={onFinish} layout="vertical">
+            <Form.Item className="my-8" name="name" rules={[{ required: true, message: t('form.nameError') }]}>
+              <Input placeholder={t('form.name')} className="sign-up-input" />
+            </Form.Item>
 
-          <Form.Item
-            name="surname"
-            rules={[{ required: true, message: "Soyadınızı daxil edin!" }]}
-          >
-            <Input placeholder="Surname" />
-          </Form.Item>
+            <Form.Item className="my-8" name="surname" rules={[{ required: true, message: t('form.surnameError') }]}>
+              <Input placeholder={t('form.surname')} className="sign-up-input" />
+            </Form.Item>
 
-          <Form.Item
-            name="email"
-            rules={[{ required: true, type: "email", message: "Düzgün e-poçt adresi daxil edin!" }]}
-          >
-            <Input placeholder="Email" />
-          </Form.Item>
+            <Form.Item className="my-8" name="email" rules={[{ required: true, type: "email", message: t('form.emailError') }]}>
+              <Input placeholder={t('form.email')} className="sign-up-input" />
+            </Form.Item>
 
-          <Form.Item name="password">
-            <Input.Password
-              placeholder="Password"
-              onChange={(e) => checkPasswordStrength(e.target.value)}
-              className={classNames("w-full p-2 rounded border", {
-                "border-red-500 bg-red-100": passwordStrength === "weak",
-                "border-yellow-500 bg-yellow-100": passwordStrength === "medium",
-                "border-green-500 bg-green-100": passwordStrength === "strong",
-              })}
-            />
-          </Form.Item>
+            <Form.Item className="mt-8" name="password">
+              <Input.Password
+                placeholder={t('form.password')}
+                onChange={(e) => checkPasswordStrength(e.target.value)}
+                className={classNames("sign-up-input", {
+                  "border-red-500 bg-red-100": passwordStrength === "weak",
+                  "border-yellow-500 bg-yellow-100": passwordStrength === "medium",
+                  "border-green-500 bg-green-100": passwordStrength === "strong",
+                })}
+              />
+            </Form.Item>
 
-          <div className="w-full h-2 rounded-lg mt-2 z-30 relative">
-            <div
-              className={classNames("h-full transition-all duration-300", {
-                "bg-red-500 w-1/4": passwordStrength === "weak",
-                "bg-yellow-500 w-2/4": passwordStrength === "medium",
-                "bg-green-500 w-full": passwordStrength === "strong",
-              })}
-            ></div>
-          </div>
+            <div className="w-full h-2 rounded-lg z-30 relative">
+              <div
+                className={classNames("h-full transition-all duration-300", {
+                  "bg-red-500 w-1/4": passwordStrength === "weak",
+                  "bg-yellow-500 w-2/4": passwordStrength === "medium",
+                  "bg-green-500 w-full": passwordStrength === "strong",
+                })}
+              ></div>
+            </div>
 
-          <Form.Item>
-            <Checkbox
-              checked={rememberPassword}
-              onChange={(e) => setRememberPassword(e.target.checked)}
-            >
-              Şifrəmi yadda saxla
-            </Checkbox>
-          </Form.Item>
+            <Form.Item>
+              <Checkbox
+                checked={rememberPassword}
+                onChange={(e) => setRememberPassword(e.target.checked)}
+              >
+                {t('form.rememberPassword')}
+              </Checkbox>
+            </Form.Item>
 
-          <Form.Item className="w-100 overflow-hidden">
-            <ReCAPTCHA
-              sitekey={import.meta.env.VITE_RECAPTCHA_KEY}
-              onChange={handleCaptchaChange}
-            />
-          </Form.Item>
+            <Form.Item className="w-100 overflow-hidden">
+              <ReCAPTCHA
+                sitekey={import.meta.env.VITE_RECAPTCHA_KEY}
+                onChange={handleCaptchaChange}
+              />
+            </Form.Item>
 
-          <Form.Item>
-            <GoogleLogin
-              onSuccess={() => {
-                if (captchaVerified) {
-                  notification.success({ message: "Google ilə qeydiyyat uğurla tamamlandı!" });
-                } else {
-                  notification.error({
-                    message: "CAPTCHA doğrulaması edilməyib",
-                    description: "Zəhmət olmasa CAPTCHA-nı tamamlayın.",
-                  });
-                }
-              }}
-              onError={() =>
-                notification.error({ message: "Google login xətası" })
-              }
-              ux_mode="popup"
-              disabled={!captchaVerified}
-            />
-          </Form.Item>
+            <Form.Item>
+              <GoogleLogin
+                onSuccess={() => {
+                  if (captchaVerified) {
+                    notification.success({ message: t('form.googleLogin') });
+                  } else {
+                    notification.error({
+                      message: t('form.captchaError'),
+                      description: t('form.captchaMessage'),
+                    });
+                  }
+                }}
+                onError={() => notification.error({ message: t('form.googleLoginError') })}
+                ux_mode="popup"
+                disabled={!captchaVerified}
+              />
+            </Form.Item>
 
-          <Form.Item>
-            <LinkedIn
-              clientId={import.meta.env.VITE_LINKEDIN_CLIENT_ID}
-              redirectUri={import.meta.env.VITE_LINKEDIN_REDIRECT_URI}
-              onSuccess={() => notification.success({ message: "LinkedIn ilə qeydiyyat uğurla tamamlandı!" })}
-              onFailure={() => notification.error({ message: "LinkedIn login xətası" })}
-              redirect={false}
-              scope="r_liteprofile r_emailaddress"
-            >
-              {({ linkedInLogin }) => (
-                <Button
-                  icon={<FaLinkedin className="text-white" />}
-                  size="large" onClick={linkedInLogin}
-                  className="w-full bg-blue-600 text-white"
-                  disabled={!captchaVerified}
-                >
-                  Sign in with LinkedIn
-                </Button>
-              )}
-            </LinkedIn>
-          </Form.Item>
+            <Form.Item>
+              <LinkedIn
+                clientId={import.meta.env.VITE_LINKEDIN_CLIENT_ID}
+                redirectUri={import.meta.env.VITE_LINKEDIN_REDIRECT_URI}
+                onSuccess={() => notification.success({ message: "LinkedIn ilə qeydiyyat uğurla tamamlandı!" })}
+                onFailure={() => notification.error({ message: "LinkedIn login xətası" })}
+                redirect={false}
+                scope="r_liteprofile r_emailaddress"
+              >
+                {({ linkedInLogin }) => (
+                  <Button
+                    icon={<FaLinkedin className="text-white" />}
+                    size="large" onClick={linkedInLogin}
+                    className="w-full bg-blue-600 text-white"
+                    disabled={!captchaVerified}
+                  >
+                    {t('form.linkedinLogin')}
+                  </Button>
+                )}
+              </LinkedIn>
+            </Form.Item>
 
-          <Form.Item>
-            <Button
-              size="large"
-              type="primary"
-              htmlType="submit"
-              className="w-full"
-              disabled={!captchaVerified}
-            >
-              Sign Up
-            </Button>
-          </Form.Item>
-        </Form>
+            <Form.Item>
+              <Button
+                size="large"
+                type="primary"
+                htmlType="submit"
+                className="w-full"
+                disabled={!captchaVerified}
+              >
+                {t('form.submit')}
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
+
+
+        {/* Modal  */}
+        <Modal
+          title={t('form.twoFactorTitle')}
+          open={isTwoFactorVisible}
+          onOk={handleTwoFactorSubmit}
+          onCancel={() => setIsTwoFactorVisible(false)}
+          okText={t('form.verify')}
+        >
+          <p>{t('form.enterVerificationCode')}</p>
+          <Input
+            type="text"
+            value={twoFactorCode}
+            onChange={(e) => setTwoFactorCode(e.target.value)}
+            placeholder="Enter your verification code"
+            className="my-3"
+          />
+          <p>{`Remaining time: ${Math.floor(timer / 60)}:${timer % 60}`}</p>
+        </Modal>
       </div>
+    </>
 
-
-      {/* Modal  */}
-      <Modal
-        title="Two-Factor Authentication"
-        open={isTwoFactorVisible}
-        onOk={handleTwoFactorSubmit}
-        onCancel={() => setIsTwoFactorVisible(false)}
-        okText="Verify"
-      >
-        <p>Doğrulama kodunu daxil edin:</p>
-        <Input
-          type="text"
-          value={twoFactorCode}
-          onChange={(e) => setTwoFactorCode(e.target.value)}
-          placeholder="Enter your verification code"
-          className="my-3"
-        />
-        <p>{`Remaining time: ${Math.floor(timer / 60)}:${timer % 60}`}</p>
-      </Modal>
-    </div>
   );
 };
 

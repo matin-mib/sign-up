@@ -1,7 +1,20 @@
 .language-dropdown {
-    padding: 5px 10px;
-    background-size: 20px;
-    background-repeat: no-repeat;
-    background-position: left 5px center;
-    padding-left: 30px; /* Bayraq üçün yer ayırır */
-  }
+  padding: 5px 10px;
+  background-size: 20px;
+  background-repeat: no-repeat;
+  background-position: left 5px center;
+  padding-left: 30px;
+  /* Bayraq üçün yer ayırır */
+}
+
+.sign-up {
+  background: rgb(224, 252, 241);
+  background: linear-gradient(180deg, rgba(224, 252, 241, 1) 50%, rgba(255, 255, 255, 0) 50%);
+}
+
+.sign-up-input {
+  border: 1px solid #777 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+

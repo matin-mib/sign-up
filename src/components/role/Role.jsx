@@ -1,17 +1,20 @@
 import { useState } from "react";
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 const Role = () => {
-
+  const { t } = useTranslation();
   const [data, setData] = useState([
     {
       freelance: '',
       işəgötürən: '',
     }
   ]);
+
+
   return (
-    <div className="h-[100vh] flex flex-col justify-center items-center">
-      <h1 className="text-center font-bold text-[25px]">Rol Seçimi</h1>
+    <div className="h-[100vh] flex flex-col justify-center items-center bg-green-color">
+      <h1 className="text-center font-bold text-[25px]">{t('roleSelection')}</h1>  {/* Tərcümə edilmiş mətn */}
 
       <div className="flex flex-wrap sm:flex-nowrap gap-5 sm:gap-0 justify-center items-end py-10">
 
@@ -21,20 +24,22 @@ const Role = () => {
           to={{ pathname: '/signup/freelance', state: { data } }}
           className="border flex justify-center items-center font-bold border-green-500 sm:rounded-tr-3xl h-[150px] w-[300px] bg-green-500 text-white hover:bg-transparent hover:text-green-500 transition"
         >
-          Mən Freelanserəm
+          {t('freelancer')} {/* Tərcümə edilmiş mətn */}
         </Link>
 
         <Link
           type="button"
-          onClick={() => setData({ şəgötürən: 'İşəgötürən' })}
+          onClick={() => setData({ işəgötürən: 'İşəgötürən' })}
           to={{ pathname: '/signup/hiring', state: { data } }}
           className="border flex justify-center items-center font-bold border-green-500 sm:rounded-tl-3xl h-[150px] sm:h-[200px] w-[300px] text-green-500 hover:bg-green-500 hover:text-white transition"
         >
-          Mən İşəgötürənəm
+          {t('employer')} {/* Tərcümə edilmiş mətn */}
         </Link>
       </div>
-    </div>
-  )
-}
 
-export default Role
+
+    </div>
+  );
+};
+
+export default Role;
