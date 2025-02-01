@@ -13,7 +13,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<RolePage />} />
-          <Route path='/signup' element={<SignUpPage />} />
+          <Route path='/signup/freelance' element={<SignUpPage />} />
+          <Route path='/signup/hiring' element={<SignUpPage />} />
           <Route path="/linkedin/callback" element={<LinkedInCallback />} />
         </Routes>
       </BrowserRouter>

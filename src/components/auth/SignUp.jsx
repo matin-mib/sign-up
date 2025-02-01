@@ -5,6 +5,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { LinkedIn } from "react-linkedin-login-oauth2";
 import { FaLinkedin } from "react-icons/fa";
 import emailjs from "emailjs-com";
+import classNames from "classnames";
 
 const SignUp = () => {
   const [form] = Form.useForm();
@@ -16,29 +17,51 @@ const SignUp = () => {
   const [verificationCode, setVerificationCode] = useState("");
   const [timer, setTimer] = useState(180);
   const [codeSent, setCodeSent] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState("");
 
- 
+
+  //! Parolun gücünü yoxlayan funksiya
+  const checkPasswordStrength = (password) => {
+    let strength = "weak"; // Default zəif
+
+    if (password.length >= 8) {
+      if (/[A-Z]/.test(password) && /\d/.test(password) && /[!@#$%^&*№]/.test(password)) {
+        strength = "strong";
+      } else if (/[A-Z]/.test(password) || /\d/.test(password) || /[!@#$%^&*№]/.test(password)) {
+        strength = "medium";
+      }
+    }
+    setPasswordStrength(strength);
+  };
+
+
+  //! Strong password
+  const isStrongPassword = (password) => {
+    const minLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*№]/.test(password);
+
+    return minLength && hasUpperCase && hasNumber && hasSpecialChar;
+  };
 
   //! Checkbox save password function
   useEffect(() => {
     const storedPassword = localStorage.getItem("savedPassword");
     if (storedPassword) {
       setSavedPassword(storedPassword);
-      form.setFieldsValue({ password: storedPassword });
       setRememberPassword(true);
+
+      setTimeout(() => {
+        form.setFieldsValue({ password: storedPassword });
+      }, 0);
     }
   }, [form]);
 
-  // Function to generate a random 6-digit verification code
-  // const generateVerificationCode = () => {
-  //   const code = Math.floor(100000 + Math.random() * 900000); // 6-digit number
-  //   setVerificationCode(code.toString());
-  // };
 
-
-
-//! Start time in modal
+  //! Start time in modal
   const startTimer = () => {
+    setTimer(180);
     const interval = setInterval(() => {
       setTimer((prev) => {
         if (prev <= 1) {
@@ -47,6 +70,9 @@ const SignUp = () => {
             message: "Time expired!",
             description: "The verification code has expired. Please request a new one.",
           });
+          setIsTwoFactorVisible(false);
+          setTwoFactorCode("");
+          form.resetFields();
           setCodeSent(false);
           return 0;
         }
@@ -56,7 +82,18 @@ const SignUp = () => {
   };
 
 
-  const sendVerificationCode = (email) => {
+  //! sendVerificationCode function
+  const sendVerificationCode = () => {
+    const email = form.getFieldValue("email");
+
+    if (!email) {
+      notification.error({
+        message: "E-poçt ünvanı daxil edilməyib!",
+        description: "Kod göndərmək üçün zəhmət olmasa e-poçt ünvanınızı daxil edin.",
+      });
+      return;
+    }
+
     const code = Math.floor(100000 + Math.random() * 900000);
     setVerificationCode(code.toString());
     setCodeSent(true);
@@ -87,11 +124,14 @@ const SignUp = () => {
     setIsTwoFactorVisible(true);
     notification.success({
       message: "Verification code sent!",
-      description: "Please check your email for the verification code.",
+      description: `Kod ${email} ünvanına göndərildi.`,
     });
   };
 
 
+
+
+  //! form onFinish function
   const onFinish = (values) => {
     if (!captchaVerified) {
       notification.error({
@@ -101,18 +141,51 @@ const SignUp = () => {
       return;
     }
 
+    if (!isStrongPassword(values.password)) {
+      notification.error({
+        message: "Zəif şifrə!",
+        description: "Şifrə minimum 8 simvol olmalıdır! Şifrədə ən azı bir böyük hərf, bir rəqəm və bir xüsusi simvol olmalıdır!",
+      });
+      return;
+    }
+
     sendVerificationCode(values.email);
+
+    const path = window.location.pathname;
+    const lastSegment = path.substring(path.lastIndexOf("/") + 1);
+
+    localStorage.setItem(
+      "signUpData",
+      JSON.stringify({
+        name: values.name,
+        surname: values.surname,
+        email: values.email,
+        password: values.password,
+        role: lastSegment,
+      })
+    );
   };
 
+
+
+
+  //! handleTwoFactorSubmit function
   const handleTwoFactorSubmit = () => {
     if (twoFactorCode === verificationCode) {
       notification.success({
         message: "Qeydiyyat tamamlandı!",
         description: "Siz uğurla qeydiyyatdan keçdiniz.",
       });
+
       setIsTwoFactorVisible(false);
       form.resetFields();
       setRememberPassword(false);
+
+
+      const signUpData = JSON.parse(localStorage.getItem("signUpData"));
+      console.log("Qeydiyyat məlumatları:", signUpData);
+      localStorage.removeItem("signUpData");
+
     } else {
       notification.error({
         message: "Yanlış doğrulama kodu",
@@ -121,9 +194,14 @@ const SignUp = () => {
     }
   };
 
+
+
+
+  //! handleCaptchaChange 
   const handleCaptchaChange = (value) => {
     setCaptchaVerified(!!value);
   };
+
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
@@ -131,43 +209,83 @@ const SignUp = () => {
         <h2 className="text-2xl font-semibold text-center mb-6">Sign Up</h2>
 
         <Form form={form} onFinish={onFinish} layout="vertical">
-          <Form.Item name="name" rules={[{ required: true, message: "Adınızı daxil edin!" }]}>
+          <Form.Item
+            name="name"
+            rules={[{ required: true, message: "Adınızı daxil edin!" }]}
+          >
             <Input placeholder="Name" />
           </Form.Item>
 
-          <Form.Item name="surname" rules={[{ required: true, message: "Soyadınızı daxil edin!" }]}>
+          <Form.Item
+            name="surname"
+            rules={[{ required: true, message: "Soyadınızı daxil edin!" }]}
+          >
             <Input placeholder="Surname" />
           </Form.Item>
 
-          <Form.Item name="email" rules={[{ required: true, type: "email", message: "Düzgün e-poçt adresi daxil edin!" }]}>
+          <Form.Item
+            name="email"
+            rules={[{ required: true, type: "email", message: "Düzgün e-poçt adresi daxil edin!" }]}
+          >
             <Input placeholder="Email" />
           </Form.Item>
 
-          <Form.Item
-            name="password"
-            rules={[
-              { required: true, message: "Şifrənizi daxil edin!" },
-              { min: 8, message: "Şifrə minimum 8 simvol olmalıdır!" },
-              { pattern: /[A-Z]/, message: "Şifrədə ən azı bir böyük hərf olmalıdır!" },
-              { pattern: /\d/, message: "Şifrədə ən azı bir rəqəm olmalıdır!" },
-              { pattern: /[!@#$%^&*№]/, message: "Şifrədə ən azı bir xüsusi simvol olmalıdır!" },
-            ]}
-          >
-            <Input.Password placeholder="Password" />
+          <Form.Item name="password">
+            <Input.Password
+              placeholder="Password"
+              onChange={(e) => checkPasswordStrength(e.target.value)}
+              className={classNames("w-full p-2 rounded border", {
+                "border-red-500 bg-red-100": passwordStrength === "weak",
+                "border-yellow-500 bg-yellow-100": passwordStrength === "medium",
+                "border-green-500 bg-green-100": passwordStrength === "strong",
+              })}
+            />
           </Form.Item>
 
+          <div className="w-full h-2 rounded-lg mt-2 z-30 relative">
+            <div
+              className={classNames("h-full transition-all duration-300", {
+                "bg-red-500 w-1/4": passwordStrength === "weak",
+                "bg-yellow-500 w-2/4": passwordStrength === "medium",
+                "bg-green-500 w-full": passwordStrength === "strong",
+              })}
+            ></div>
+          </div>
+
           <Form.Item>
-            <Checkbox checked={rememberPassword} onChange={(e) => setRememberPassword(e.target.checked)}>
+            <Checkbox
+              checked={rememberPassword}
+              onChange={(e) => setRememberPassword(e.target.checked)}
+            >
               Şifrəmi yadda saxla
             </Checkbox>
           </Form.Item>
 
           <Form.Item className="w-100 overflow-hidden">
-            <ReCAPTCHA sitekey={import.meta.env.VITE_RECAPTCHA_KEY} onChange={handleCaptchaChange} />
+            <ReCAPTCHA
+              sitekey={import.meta.env.VITE_RECAPTCHA_KEY}
+              onChange={handleCaptchaChange}
+            />
           </Form.Item>
 
           <Form.Item>
-            <GoogleLogin onSuccess={() => notification.success({ message: "Google ilə qeydiyyat uğurla tamamlandı!" })} onError={() => notification.error({ message: "Google login xətası" })} ux_mode="popup" />
+            <GoogleLogin
+              onSuccess={() => {
+                if (captchaVerified) {
+                  notification.success({ message: "Google ilə qeydiyyat uğurla tamamlandı!" });
+                } else {
+                  notification.error({
+                    message: "CAPTCHA doğrulaması edilməyib",
+                    description: "Zəhmət olmasa CAPTCHA-nı tamamlayın.",
+                  });
+                }
+              }}
+              onError={() =>
+                notification.error({ message: "Google login xətası" })
+              }
+              ux_mode="popup"
+              disabled={!captchaVerified}
+            />
           </Form.Item>
 
           <Form.Item>
@@ -180,7 +298,12 @@ const SignUp = () => {
               scope="r_liteprofile r_emailaddress"
             >
               {({ linkedInLogin }) => (
-                <Button icon={<FaLinkedin className="text-white" />} size="large" onClick={linkedInLogin} className="w-full bg-blue-600 text-white">
+                <Button
+                  icon={<FaLinkedin className="text-white" />}
+                  size="large" onClick={linkedInLogin}
+                  className="w-full bg-blue-600 text-white"
+                  disabled={!captchaVerified}
+                >
                   Sign in with LinkedIn
                 </Button>
               )}
@@ -188,18 +311,26 @@ const SignUp = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button size="large" type="primary" htmlType="submit" className="w-full" disabled={!captchaVerified}>
+            <Button
+              size="large"
+              type="primary"
+              htmlType="submit"
+              className="w-full"
+              disabled={!captchaVerified}
+            >
               Sign Up
             </Button>
           </Form.Item>
         </Form>
       </div>
 
+
+      {/* Modal  */}
       <Modal
         title="Two-Factor Authentication"
-        visible={isTwoFactorVisible}
+        open={isTwoFactorVisible}
         onOk={handleTwoFactorSubmit}
-        // onCancel={() => setIsTwoFactorVisible(false)}
+        onCancel={() => setIsTwoFactorVisible(false)}
         okText="Verify"
       >
         <p>Doğrulama kodunu daxil edin:</p>
@@ -208,6 +339,7 @@ const SignUp = () => {
           value={twoFactorCode}
           onChange={(e) => setTwoFactorCode(e.target.value)}
           placeholder="Enter your verification code"
+          className="my-3"
         />
         <p>{`Remaining time: ${Math.floor(timer / 60)}:${timer % 60}`}</p>
       </Modal>

@@ -18,7 +18,7 @@ const Role = () => {
         <Link
           onClick={() => setData({ freelance: 'freelance' })}
           type="button"
-          to={{ pathname: '/signup', state: { data } }}
+          to={{ pathname: '/signup/freelance', state: { data } }}
           className="border flex justify-center items-center font-bold border-green-500 sm:rounded-tr-3xl h-[150px] w-[300px] bg-green-500 text-white hover:bg-transparent hover:text-green-500 transition"
         >
           Mən Freelanserəm
@@ -27,7 +27,7 @@ const Role = () => {
         <Link
           type="button"
           onClick={() => setData({ şəgötürən: 'İşəgötürən' })}
-          to={{ pathname: '/signup', state: { data } }}
+          to={{ pathname: '/signup/hiring', state: { data } }}
           className="border flex justify-center items-center font-bold border-green-500 sm:rounded-tl-3xl h-[150px] sm:h-[200px] w-[300px] text-green-500 hover:bg-green-500 hover:text-white transition"
         >
           Mən İşəgötürənəm
