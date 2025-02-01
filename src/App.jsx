@@ -13,7 +13,7 @@ function App() {
         <Routes>
           <Route path='/' element={<RolePage />} />
           <Route path='/signup/freelance' element={<SignUpPage />} />
-          <Route path='/signup/hiring' element={<SignUpPage />} />
+          <Route path='/signup/employer' element={<SignUpPage />} />
         </Routes>
       </BrowserRouter>
     </GoogleOAuthProvider>
